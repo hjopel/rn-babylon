@@ -38,6 +38,8 @@ import {
   PointerInput,
   WebXRTrackingState,
   IMouseEvent,
+  MeshBuilder,
+  HemisphericLight,
 } from '@babylonjs/core';
 import '@babylonjs/loaders';
 import {
@@ -66,39 +68,53 @@ function App(): JSX.Element {
   };
 
   useEffect(() => {
-    console.log('ENGINE', engine)
-    // if (engine) {
-    //   const scene = new Scene(engine);
-    //   setScene(scene);
-    //   scene.createDefaultCamera(true);
-    //   (scene.activeCamera as ArcRotateCamera).beta -= Math.PI / 8;
-    //   setCamera(scene.activeCamera!);
-    //   scene.createDefaultLight(true);
-    //   const rootNode = new TransformNode('Root Container', scene);
-    //   setRootNode(rootNode);
+    if (engine) {
+      const scene = new Scene(engine);
+      setScene(scene);
+      scene.createDefaultCamera(true);
+      (scene.activeCamera as ArcRotateCamera).beta -= Math.PI / 8;
+      setCamera(scene.activeCamera!);
+      scene.createDefaultLight(true);
+      // const rootNode = new TransformNode('Root Container', scene);
+      // setRootNode(rootNode);
 
-    //   const transformContainer = new TransformNode(
-    //     'Transform Container',
-    //     scene,
-    //   );
-    //   transformContainer.parent = rootNode;
-    //   transformContainer.scaling.scaleInPlace(0.2);
-    //   transformContainer.position.y -= 0.2;
+      const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
 
-    //   scene.beforeRender = function () {
-    //     transformContainer.rotate(
-    //       Vector3.Up(),
-    //       0.005 * scene.getAnimationRatio(),
-    //     );
-    //   };
-    //   SceneLoader.ImportMeshAsync(
-    //     '',
-    //     'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxAnimated/glTF-Binary/BoxAnimated.glb',
-    //   ).then(result => {
-    //     const mesh = result.meshes[0];
-    //     mesh.parent = transformContainer;
-    //   });
-    // }
+      const sphere = MeshBuilder.CreateSphere(
+        'sphere',
+        {diameter: 2, segments: 32},
+        scene,
+      );
+      sphere.position.y = 1;
+
+      const ground = MeshBuilder.CreateGround(
+        'ground',
+        {width: 6, height: 6},
+        scene,
+      );
+
+      // const transformContainer = new TransformNode(
+      //   'Transform Container',
+      //   scene,
+      // );
+      // transformContainer.parent = rootNode;
+      // transformContainer.scaling.scaleInPlace(0.2);
+      // transformContainer.position.y -= 0.2;
+
+      // scene.beforeRender = function () {
+      //   transformContainer.rotate(
+      //     Vector3.Up(),
+      //     0.005 * scene.getAnimationRatio(),
+      //   );
+      // };
+      // SceneLoader.ImportMeshAsync(
+      //   '',
+      //   'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxAnimated/glTF-Binary/BoxAnimated.glb',
+      // ).then(result => {
+      //   const mesh = result.meshes[0];
+      //   mesh.parent = transformContainer;
+      // });
+    }
   }, [engine]);
 
   const onInitialized = useCallback(
@@ -118,7 +134,11 @@ function App(): JSX.Element {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <Header />
-        {/* <EngineView camera={camera} displayFrameRate={true} onInitialized={onInitialized}/> */}
+        <EngineView
+          camera={camera}
+          displayFrameRate={true}
+          onInitialized={onInitialized}
+        />
       </ScrollView>
     </SafeAreaView>
   );
